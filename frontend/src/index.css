@@ -1,0 +1,179 @@
+:root {
+  --primary-cyan: #00f2fe;
+  --secondary-blue: #4facfe;
+  --accent-gold: #ffbe0b;
+  --stark-glow: rgba(0, 242, 254, 0.45);
+  --dark-bg: #03080e;
+  --panel-bg: rgba(6, 21, 34, 0.7);
+  --border-cyan: rgba(0, 242, 254, 0.25);
+  --border-active: rgba(0, 242, 254, 0.8);
+  --text-main: #dcf8ff;
+  --text-muted: #5e8d9c;
+  --font-orbitron: 'Orbitron', monospace, sans-serif;
+  --font-rajdhani: 'Rajdhani', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--dark-bg);
+  color: var(--text-main);
+  font-family: var(--font-rajdhani);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  background-image: 
+    radial-gradient(circle at 50% 30%, #08293d 0%, #030d17 50%, #02060a 100%),
+    linear-gradient(rgba(0, 242, 254, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 242, 254, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+}
+
+/* CRT Scanline overlay effect */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  z-index: 99;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Glassmorphic Stark Panels */
+.hud-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-cyan);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(0, 242, 254, 0.05);
+  transition: all 0.3s ease;
+}
+
+.hud-panel:hover {
+  border-color: var(--border-active);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), inset 0 0 25px rgba(0, 242, 254, 0.1);
+}
+
+/* Corner bracket HUD accents */
+.hud-corner-tl {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--primary-cyan);
+  border-left: 2px solid var(--primary-cyan);
+}
+
+.hud-corner-tr {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--primary-cyan);
+  border-right: 2px solid var(--primary-cyan);
+}
+
+.hud-corner-bl {
+  position: absolute;
+  bottom: -1px;
+  left: -1px;
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid var(--primary-cyan);
+  border-left: 2px solid var(--primary-cyan);
+}
+
+.hud-corner-br {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid var(--primary-cyan);
+  border-right: 2px solid var(--primary-cyan);
+}
+
+/* Typography styles */
+h1, h2, h3, .hud-title {
+  font-family: var(--font-orbitron);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.hud-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--primary-cyan);
+  letter-spacing: 1px;
+}
+
+/* Arc Reactor Animation Classes */
+@keyframes spin-clockwise {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-counter {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes core-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 25px var(--primary-cyan), 0 0 60px rgba(0, 242, 254, 0.4), inset 0 0 20px #fff;
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 45px var(--primary-cyan), 0 0 90px rgba(0, 242, 254, 0.7), inset 0 0 35px #fff;
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-clockwise 20s linear infinite;
+}
+
+.animate-spin-counter-slow {
+  animation: spin-counter 25s linear infinite;
+}
+
+.animate-spin-fast {
+  animation: spin-clockwise 6s linear infinite;
+}
+
+.animate-pulse-glow {
+  animation: core-pulse 2.2s infinite ease-in-out;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(3, 13, 23, 0.8);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 242, 254, 0.3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-cyan);
+}
