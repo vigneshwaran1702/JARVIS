@@ -28,21 +28,61 @@ export default function App() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
-      recognition.continuous = false;
+      recognition.continuous = true; // continuously listen
       recognition.interimResults = false;
       recognition.lang = 'en-US';
 
-      recognition.onstart = () => setIsListening(true);
+      recognition.onstart = () => {
+        console.log('Speech recognition started');
+        setIsListening(true);
+      };
       recognition.onresult = (event) => {
+        console.log('Speech result', event);
         const transcript = event.results[0][0].transcript;
-        if (transcript) sendCommand(transcript);
+        if (transcript) {
+          console.log('Recognized transcript:', transcript);
+          sendCommand(transcript);
+        }
       };
       recognition.onerror = (event) => {
         console.warn('Speech recognition error:', event.error);
         setIsListening(false);
+        // If permission denied, fallback to manual start via button
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          console.warn('Microphone permission denied; user must click mic button to start');
+        }
       };
-      recognition.onend = () => setIsListening(false);
+      // Auto-restart listening after each end event
+      recognition.onend = () => {
+        console.log('Speech recognition ended, restarting');
+        setIsListening(false);
+        // Restart listening if still mounted
+        if (recognitionRef.current) {
+          try { recognition.start(); } catch (e) { console.warn('Restart error', e); }
+        }
+      };
       recognitionRef.current = recognition;
+
+      // Request microphone permission first, then start recognition
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+          .then(() => {
+            try {
+              recognition.start();
+            } catch (e) {
+              console.warn('Initial start error:', e);
+            }
+          })
+          .catch((err) => {
+            console.warn('Microphone permission denied:', err);
+          });
+      } else {
+        try {
+          recognition.start();
+        } catch (e) {
+          console.warn('Initial start error:', e);
+        }
+      }
     }
   }, []);
 
@@ -189,12 +229,14 @@ export default function App() {
     }
   };
 
+  // toggleMic is retained for manual control but auto-listening is enabled.
   const toggleMic = () => {
     if (!recognitionRef.current) {
       alert('Speech Recognition is not supported by your browser or microphone access is restricted.');
       return;
     }
 
+    // Manual toggle: stop if listening, otherwise start.
     if (isListening) {
       recognitionRef.current.stop();
     } else {
