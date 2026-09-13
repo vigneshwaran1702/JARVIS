@@ -19,16 +19,20 @@ export default function App() {
   const [stats, setStats] = useState(null);
   const [backendOnline, setBackendOnline] = useState(false);
   const [messages, setMessages] = useState([]);
-
+  const [firstInteractionDone, setFirstInteractionDone] = useState(false);
   const recognitionRef = useRef(null);
   const currentAudioRef = useRef(null);
 
   // Initialize Web Speech Recognition
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
+    const handleFirstClick = () => {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.warn('Speech Recognition not supported');
+        return;
+      }
       const recognition = new SpeechRecognition();
-      recognition.continuous = true; // continuously listen
+      recognition.continuous = true;
       recognition.interimResults = false;
       recognition.lang = 'en-US';
 
@@ -47,43 +51,32 @@ export default function App() {
       recognition.onerror = (event) => {
         console.warn('Speech recognition error:', event.error);
         setIsListening(false);
-        // If permission denied, fallback to manual start via button
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           console.warn('Microphone permission denied; user must click mic button to start');
         }
       };
-      // Auto-restart listening after each end event
       recognition.onend = () => {
         console.log('Speech recognition ended, restarting');
         setIsListening(false);
-        // Restart listening if still mounted
-        if (recognitionRef.current) {
-          try { recognition.start(); } catch (e) { console.warn('Restart error', e); }
-        }
+        try { recognition.start(); } catch (e) { console.warn('Restart error', e); }
       };
       recognitionRef.current = recognition;
 
-      // Request microphone permission first, then start recognition
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         navigator.mediaDevices.getUserMedia({ audio: true })
-          .then(() => {
-            try {
-              recognition.start();
-            } catch (e) {
-              console.warn('Initial start error:', e);
-            }
-          })
-          .catch((err) => {
-            console.warn('Microphone permission denied:', err);
-          });
+          .then(() => { try { recognition.start(); } catch (e) { console.warn('Initial start error:', e); } })
+          .catch((err) => { console.warn('Microphone permission denied:', err); });
       } else {
-        try {
-          recognition.start();
-        } catch (e) {
-          console.warn('Initial start error:', e);
-        }
+        try { recognition.start(); } catch (e) { console.warn('Initial start error:', e); }
       }
-    }
+
+      setFirstInteractionDone(true);
+      document.removeEventListener('click', handleFirstClick);
+    };
+    document.addEventListener('click', handleFirstClick);
+    return () => {
+      document.removeEventListener('click', handleFirstClick);
+    };
   }, []);
 
   // Poll backend health, system telemetry, and memory
@@ -261,17 +254,32 @@ export default function App() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        padding: '1.5rem 2rem',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1.5rem',
-        maxWidth: '1400px',
-        margin: '0 auto',
-      }}
-    >
+    <>
+      {!firstInteractionDone && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.0)',
+            cursor: 'pointer',
+            zIndex: 9999,
+          }}
+        />
+      )}
+      <div
+        style={{
+          minHeight: '100vh',
+          padding: '1.5rem 2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1.5rem',
+          maxWidth: '1400px',
+          margin: '0 auto',
+        }}
+      >
       {/* Top HUD Header */}
       <header
         className="hud-panel"
@@ -517,6 +525,7 @@ export default function App() {
           <CommandLog messages={messages} onClearMemory={handleClearMemory} />
         </div>
       </main>
-    </div>
-  );
-}
+      </div>
+    </>
+    );
+  }
