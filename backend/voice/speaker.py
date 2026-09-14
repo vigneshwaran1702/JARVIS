@@ -26,7 +26,7 @@ async def synthesize_neural_audio_bytes(text: str, voice: str = None) -> bytes:
     Generates high-fidelity MP3 audio bytes using Microsoft Edge Neural TTS.
     Produces studio broadcast quality female human voice without API keys.
     """
-    target_voice = voice if voice and "Neural" in voice else DEFAULT_NEURAL_VOICE
+    target_voice = DEDICATED_VOICE
     communicate = edge_tts.Communicate(text, target_voice)
     audio_chunks = []
     async for chunk in communicate.stream():
