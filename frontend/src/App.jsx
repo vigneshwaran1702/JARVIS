@@ -15,7 +15,7 @@ export default function App() {
   const [status, setStatus] = useState('idle'); // idle | processing | error
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceAudioEnabled, setVoiceAudioEnabled] = useState(true);
+
   const [stats, setStats] = useState(null);
   const [backendOnline, setBackendOnline] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -116,7 +116,7 @@ export default function App() {
 
   // Studio Neural Voice Synthesizer exclusively with Jenny's Voice
   const speakText = async (text) => {
-    if (!voiceAudioEnabled) return;
+    // voice always enabled
 
     // Stop any existing playback
     if (currentAudioRef.current) {
@@ -366,25 +366,7 @@ export default function App() {
           </button>
 
           {/* Audio Mute / Unmute Toggle */}
-          <button
-            onClick={() => setVoiceAudioEnabled(!voiceAudioEnabled)}
-            style={{
-              background: 'rgba(0, 242, 254, 0.08)',
-              border: '1px solid var(--border-cyan)',
-              color: voiceAudioEnabled ? 'var(--primary-cyan)' : 'var(--text-muted)',
-              padding: '6px 12px',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '0.8rem',
-              fontFamily: 'var(--font-mono)',
-            }}
-          >
-            {voiceAudioEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
-            {voiceAudioEnabled ? 'AUDIO ON' : 'MUTED'}
-          </button>
+
         </div>
       </header>
 
