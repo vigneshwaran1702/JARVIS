@@ -147,8 +147,9 @@ class JarvisBrain:
                 f"monitor hardware telemetry, navigate web destinations, execute calculations, and converse through our neural interface."
             )
 
+        # Generic acknowledgment for commands when no specific handler matches
         return (
-            f"Understood, {USER_TITLE}. Command '{user_message}' has been registered in the system log. "
-            f"To enable open-ended generative conversation, provide your Gemini/OpenAI API key in the .env file."
+            f"Acknowledged, {USER_TITLE}. I have processed your request: '{user_message}'. "
+            "For more detailed interactions, consider configuring an API key in the .env file."
         )
 
