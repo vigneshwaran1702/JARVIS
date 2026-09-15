@@ -16,7 +16,7 @@ except ImportError:
     HAS_PYTTSX3 = False
 
 # Dedicated Jenny Neural Studio Voice
-DEDICATED_VOICE = "en-US-AriaNeural"
+DEDICATED_VOICE = "en-US-JennyNeural"
 DEFAULT_NEURAL_VOICE = DEDICATED_VOICE
 
 
